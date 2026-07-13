@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I AM - 정승원의 포근한 집 안</title>
+    <style>
+        /* --- 1. DESIGN SYSTEM & RESET --- */
+        :root {
+            --bg-primary: #fdfbf7;
+            --bg-secondary: #f7f3eb;
+            --white: #ffffff;
+            --accent-yellow: #f4c430;
+            --accent-warm: #e5a93b;
+            --text-dark: #3e2723;
+            --text-muted: #795548;
+            --border-color: #e0d7c6;
+            --font-main: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-primary);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3 {
+            font-weight: 800;
+            letter-spacing: -0.02em;
+        }
+
+        section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: var(--text-dark);
+            position: relative;
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 4px;
+            background-color: var(--accent-yellow);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        /* --- 2. HERO SECTION --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            padding-top: 120px;
+        }
+
+        .hero-content {
+            flex: 1;
+        }
+
+        .hero-tag {
+            display: inline-block;
+            background-color: var(--accent-yellow);
+            color: var(--text-dark);
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 3.8rem;
+            line-height: 1.2;
+            margin-bottom: 25px;
+        }
+
+        .hero-title span {
+            color: var(--accent-warm);
+        }
+
+        .hero-catchphrase {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            word-break: keep-all;
+        }
+
+        .hero-graphic {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        /* 첫인상용 그래픽 (창가와 고양이 실루엣 순수 CSS 구현) */
+        .window-graphic {
+            width: 350px;
+            height: 450px;
+            background: linear-gradient(135deg, #fffde7 0%, #ffe082 100%);
+            border: 12px solid var(--white);
+            border-radius: 200px 200px 0 0;
+            box-shadow: 0 20px 40px rgba(62, 39, 35, 0.1);
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .sunlight {
+            position: absolute;
+            top: 0;
+            left: -50%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(-45deg);
+        }
+
+        .cat-silhouette {
+            width: 100px;
+            height: 140px;
+            background-color: var(--text-dark);
+            border-radius: 50% 50% 0 0;
+            position: relative;
+            margin-bottom: -10px;
+        }
+
+        .cat-silhouette::before { /* 고양이 귀 */
+            content: '';
+            position: absolute;
+            top: -10px; left: 15px;
+            width: 0; height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 25px solid var(--text-dark);
+        }
+
+        .cat-silhouette::after { /* 고양이 다른쪽 귀 */
+            content: '';
+            position: absolute;
+            top: -10px; right: 15px;
+            width: 0; height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 25px solid var(--text-dark);
+        }
+
+        /* --- 3. ABOUT SECTION --- */
+        .about {
+            background-color: var(--bg-secondary);
+            border-radius: 30px;
+            margin: 50px auto;
+            text-align: center;
+        }
+
+        .about-text {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+            color: var(--text-dark);
+            word-break: keep-all;
+        }
+
+        /* --- 4. CHARM POINTS SECTION --- */
+        .charm-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+            margin-top: 40px;
+        }
+
+        .charm-card {
+            background-color: var(--white);
+            padding: 40px 30px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+            transition: transform 0.3s ease;
+            text-align: center;
+        }
+
+        .charm-card:hover {
+            transform: translateY(-10px);
+        }
+
+        .charm-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+        }
+
+        .charm-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            color: var(--text-dark);
+        }
+
+        .charm-card p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* --- 5. TIMELINE SECTION --- */
+        .timeline {
+            background-color: var(--bg-secondary);
+            border-radius: 30px;
+            margin: 50px auto;
+        }
+
+        .timeline-container {
+            display: flex;
+            justify-content: space-between;
+            position: relative;
+            margin-top: 60px;
+            gap: 20px;
+        }
+
+        .timeline-container::before {
+            content: '';
+            position: absolute;
+            top: 40px;
+            left: 10%;
+            width: 80%;
+            height: 4px;
+            background-color: var(--border-color);
+            z-index: 1;
+        }
+
+        .timeline-step {
+            flex: 1;
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 20px;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.03);
+            text-align: center;
+        }
+
+        .timeline-badge {
+            width: 50px;
+            height: 50px;
+            background-color: var(--accent-yellow);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin: 0 auto 20px;
+            border: 4px solid var(--white);
+            box-shadow: 0 0 0 4px var(--accent-yellow);
+        }
+
+        /* --- 6. SUPPORT POINTS SECTION --- */
+        .support-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 30px;
+        }
+
+        .support-card {
+            background-color: var(--white);
+            border: 2px solid var(--text-dark);
+            border-radius: 20px;
+            padding: 35px;
+            position: relative;
+        }
+
+        .support-card::after { /* 깔끔한 디자인 포인트 그림자 효과 */
+            content: '';
+            position: absolute;
+            top: 8px; left: 8px; right: -8px; bottom: -8px;
+            background-color: var(--accent-yellow);
+            border: 2px solid var(--text-dark);
+            border-radius: 20px;
+            z-index: -1;
+        }
+
+        /* --- 7. GALLERY SECTION --- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 2fr);
+            gap: 20px;
+        }
+
+        .gallery-item {
+            position: relative;
+            border-radius: 15px;
+            overflow: hidden;
+            aspect-ratio: 4 / 3;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+        }
+
+        .gallery-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .gallery-item:hover img {
+            transform: scale(1.05);
+        }
+
+        .gallery-caption {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            background: linear-gradient(transparent, rgba(62, 39, 35, 0.8));
+            color: var(--white);
+            padding: 15px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        /* --- 8. CTA SECTION --- */
+        .cta-section {
+            text-align: center;
+            padding: 80px 20px;
+        }
+
+        .cta-btn {
+            display: inline-block;
+            background-color: var(--text-dark);
+            color: var(--white);
+            padding: 20px 45px;
+            font-size: 1.25rem;
+            font-weight: 700;
+            text-decoration: none;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(62, 39, 35, 0.25);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .cta-btn:hover {
+            transform: scale(1.1); /* 요구사항인 살짝 확대 효과 */
+            background-color: var(--accent-warm);
+            color: var(--text-dark);
+        }
+
+        /* --- 9. FOOTER --- */
+        footer {
+            background-color: var(--text-dark);
+            color: var(--bg-primary);
+            padding: 50px 20px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .footer-links {
+            margin-bottom: 20px;
+        }
+
+        .footer-links a {
+            color: var(--accent-yellow);
+            text-decoration: none;
+            margin: 0 15px;
+            font-weight: 600;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        /* --- 10. RESPONSIVE MEDIA QUERIES --- */
+        @media (max-width: 992px) {
+            .hero {
+                flex-direction: column;
+                text-align: center;
+                padding-top: 60px;
+            }
+            .hero-title { font-size: 2.8rem; }
+            .charm-grid, .timeline-container, .support-grid, .gallery-grid {
+                grid-template-columns: 1fr;
+                flex-direction: column;
+                gap: 40px;
+            }
+            .timeline-container::before { display: none; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 576px) {
+            .gallery-grid { grid-template-columns: 1fr; }
+            .hero-title { font-size: 2.3rem; }
+            .section-title { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. 히어로 섹션 -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-tag">I AM</span>
+            <h1 class="hero-title">위풍당당 고양이와<br>따사로운 햇빛이<br>머무는 곳, <span>나의 방</span></h1>
+            <p class="hero-catchphrase">
+                따뜻한 햇빛이 비치는 집 안, 고양이 인절미와 승원의 일상. <br>
+                <strong>햇빛 한 줌, 고양이 한 스푼.</strong> 정승원의 포근한 집 안으로 초대합니다.
+            </p>
+        </div>
+        <div class="hero-graphic">
+            <div class="window-graphic">
+                <div class="sunlight"></div>
+                <div class="cat-silhouette"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. 소개 섹션 -->
+    <section id="about" class="about">
+        <h2 class="section-title">I AM</h2>
+        <p class="about-text">
+            반갑습니다! 2030 팀원 여러분을 정승원의 개인 공간으로 초대합니다. <br><br>
+            저는 집 안에서 고양이 '김인절미'와 뒹굴거리며 에너지를 충전하고, <br>
+            좋아하는 게임과 축구, 영화를 즐기며 나만의 단단한 세계를 만들어가는 사람입니다. <br>
+            포근하고 깔끔하게 정돈된 공간 속에서 피어나는 저의 소소하지만 특별한 이야기들을 만나보세요.
+        </p>
+    </section>
+
+    <!-- 3. 매력 포인트 섹션 -->
+    <section id="charms">
+        <h2 class="section-title">핵심 매력 포인트</h2>
+        <div class="charm-grid">
+            <div class="charm-card">
+                <div class="charm-icon">🐾</div>
+                <h3>귀여움</h3>
+                <p>고양이 '김인절미'가 온 방안을 누비며 신나게 놀고 간 귀여운 장난감 흔적들이 가득합니다.</p>
+            </div>
+            <div class="charm-card">
+                <div class="charm-icon">🎮</div>
+                <h3>취미 용품들</h3>
+                <p>주말을 책임지는 축구공, 열정을 증명하는 롤 에메랄드 티어 마크, 그리고 가슴을 뛰게 하는 마블 엔드게임 굿즈까지 소장 중입니다.</p>
+            </div>
+            <div class="charm-card">
+                <div class="charm-icon">✏️</div>
+                <h3>깔끔함</h3>
+                <p>직접 귀엽게 그린 아기자기한 고양이 일러스트 요소를 배치하여, 정돈되면서도 감성적인 톤앤매너를 유지합니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 교육 과정 흐름 섹션 -->
+    <section id="timeline" class="timeline">
+        <h2 class="section-title">라이프 플로우</h2>
+        <div class="timeline-container">
+            <div class="timeline-step">
+                <div class="timeline-badge">01</div>
+                <h3>집 밖</h3>
+                <p>넓은 축구장을 누비며 팀워크를 다지고 에너지를 발산하는 역동적인 외부 활동 시간</p>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-badge">02</div>
+                <h3>집 안</h3>
+                <p>따뜻한 햇빛 아래 고양이 인절미를 보살피고, 롤과 마블 영화를 보며 영감을 채우는 충전의 시간</p>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-badge">03</div>
+                <h3>집 밖</h3>
+                <p>집안에서 꽉 채운 긍정적인 에너지와 아이디어를 가지고 5명의 팀원들과 협업하러 나아가는 시간</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 지원 포인트 섹션 -->
+    <section id="support-section">
+        <h2 class="section-title">스페셜 키워드</h2>
+        <div class="support-grid">
+            <div class="support-card">
+                <h3>🐈 고양이 케어</h3>
+                <p style="margin-top: 15px;">인절미를 챙기는 꼼꼼함과 다정함으로, 팀원들의 컨디션과 프로젝트의 작은 디테일까지 세심하게 살핍니다.</p>
+            </div>
+            <div class="support-card">
+                <h3>🏆 몰입하는 취미</h3>
+                <p style="margin-top: 15px;">롤 에메랄드 달성, 축구, 굿즈 수집 등 좋아하는 분야에 끝까지 깊게 몰입하고 성과를 내는 추진력을 가졌습니다.</p>
+            </div>
+            <div class="support-card">
+                <h3>🗺️ 나침반과 지도</h3>
+                <p style="margin-top: 15px;">집 안팎을 명확히 구분하고 조율하듯, 팀 프로젝트 진행 시 방향성을 잃지 않도록 이정표 역할을 해냅니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. 갤러리 섹션 -->
+    <section id="gallery">
+        <h2 class="section-title">나의 일상 조각들</h2>
+        <div class="gallery-grid">
+            <!-- 감성 가득한 무료 스톡 이미지 활용 플레이스홀더 -->
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=80" alt="고양이">
+                <div class="gallery-caption">우리 집 대장, 김인절미</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=500&q=80" alt="축구">
+                <div class="gallery-caption">스트레스를 날리는 축구 경기</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=500&q=80" alt="게이밍">
+                <div class="gallery-caption">에메랄드 티어의 열정</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=500&q=80" alt="영화관">
+                <div class="gallery-caption">마블 정주행 플레이스</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=500&q=80" alt="방안 햇빛">
+                <div class="gallery-caption">오후 3시, 방 안 가득한 햇빛</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?auto=format&fit=crop&w=500&q=80" alt="팀원 협업">
+                <div class="gallery-caption">5명의 소중한 팀원들과 함께</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 7. CTA 섹션 -->
+    <section class="cta-section">
+        <button class="cta-btn" id="cta-button">나에 대해 더 알아보기</button>
+    </section>
+
+    <!-- 8. 푸터 섹션 -->
+    <footer>
+        <div class="footer-links">
+            <a href="#">공식 사이트 바로가기</a>
+            <a href="mailto:seungwon@example.com">문의하기 (Email)</a>
+        </div>
+        <p>&copy; 2026 I AM 정승원. All rights reserved. Designed for Our Team.</p>
+    </footer>
+
+    <!-- JavaScript 기능 구현 -->
+    <script>
+        document.getElementById('cta-button').addEventListener('click', function() {
+            const targetSection = document.getElementById('support-section');
+            if (targetSection) {
+                targetSection.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    </script>
+</body>
+</html>
