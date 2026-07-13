@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>I AM - 정승원의 포근한 집 안 (v5)</title>
+    <style>
+        /* --- 1. DESIGN SYSTEM & VARIABLES --- */
+        :root {
+            /* 라이트 모드 (기본: 화이트, 노랑, 갈색) */
+            --bg-primary: #fdfbf7;
+            --bg-secondary: #f7f3eb;
+            --white: #ffffff;
+            --accent-yellow: #f4c430;
+            --accent-warm: #e5a93b;
+            --text-dark: #3e2723;
+            --text-muted: #795548;
+            --border-color: #e0d7c6;
+            --font-main: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
+            --transition-speed: 0.3s;
+        }
+
+        /* v2: 다크 모드 변수 선언 */
+        body.dark-mode {
+            --bg-primary: #12100e;
+            --bg-secondary: #1a1613;
+            --white: #1e1a17;
+            --accent-yellow: #f4c430;
+            --accent-warm: #ffb74d;
+            --text-dark: #f5f5f5;
+            --text-muted: #bcaaa4;
+            --border-color: #3e2723;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color var(--transition-speed) ease, color var(--transition-speed) ease, border-color var(--transition-speed) ease;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--bg-primary);
+            color: var(--text-dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* v3: 상단 스크롤 진행률 바 */
+        #scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 6px;
+            background: linear-gradient(90deg, var(--accent-yellow), var(--accent-warm));
+            z-index: 10000;
+        }
+
+        /* v4: 파티클 캔버스 레이어 */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* v2: 다크모드 토글 버튼 */
+        #theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--text-dark);
+            color: var(--bg-primary);
+            border: none;
+            cursor: pointer;
+            z-index: 9999;
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        #theme-toggle:hover {
+            transform: scale(1.1);
+        }
+
+        /* --- 레이아웃 기본 공통 스타일 --- */
+        section {
+            padding: 100px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1; /* 콘텐츠가 파티클 위에 오도록 설정 */
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 50px;
+            color: var(--text-dark);
+        }
+
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 50px;
+            height: 4px;
+            background-color: var(--accent-yellow);
+            margin: 15px auto 0;
+            border-radius: 2px;
+        }
+
+        /* --- 1. HERO SECTION --- */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 40px;
+            padding-top: 120px;
+        }
+
+        .hero-content { flex: 1; }
+
+        .hero-tag {
+            display: inline-block;
+            background-color: var(--accent-yellow);
+            color: #3e2723;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+        }
+
+        .hero-title {
+            font-size: 3.8rem;
+            line-height: 1.2;
+            margin-bottom: 25px;
+        }
+
+        .hero-title span { color: var(--accent-warm); }
+
+        .hero-catchphrase {
+            font-size: 1.2rem;
+            color: var(--text-muted);
+            word-break: keep-all;
+        }
+
+        .hero-graphic {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .window-graphic {
+            width: 350px;
+            height: 450px;
+            background: linear-gradient(135deg, #fffde7 0%, #ffe082 100%);
+            border: 12px solid var(--white);
+            border-radius: 200px 200px 0 0;
+            box-shadow: 0 20px 40px rgba(62, 39, 35, 0.1);
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        body.dark-mode .window-graphic {
+            background: linear-gradient(135deg, #2c251e 0%, #ffb74d 100%);
+        }
+
+        .sunlight {
+            position: absolute;
+            top: 0; left: -50%; width: 200%; height: 100%;
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 50%, rgba(255,255,255,0) 100%);
+            transform: rotate(-45deg);
+        }
+
+        .cat-silhouette {
+            width: 100px; height: 140px;
+            background-color: #3e2723;
+            border-radius: 50% 50% 0 0;
+            position: relative;
+            margin-bottom: -10px;
+        }
+        .cat-silhouette::before, .cat-silhouette::after {
+            content: ''; position: absolute; top: -10px; width: 0; height: 0;
+            border-left: 15px solid transparent; border-right: 15px solid transparent;
+            border-bottom: 25px solid #3e2723;
+        }
+        .cat-silhouette::before { left: 15px; }
+        .cat-silhouette::after { right: 15px; }
+
+        /* --- 2. ABOUT SECTION --- */
+        .about { background-color: var(--bg-secondary); border-radius: 30px; margin: 50px auto; text-align: center; }
+        .about-text { font-size: 1.2rem; max-width: 800px; margin: 0 auto; word-break: keep-all; }
+
+        /* --- 3. CHARM POINTS SECTION --- */
+        .charm-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px; }
+        .charm-card {
+            background-color: var(--white); padding: 40px 30px; border-radius: 20px;
+            border: 1px solid var(--border-color); box-shadow: 0 10px 20px rgba(0,0,0,0.02);
+            transition: transform 0.3s ease; text-align: center;
+        }
+        .charm-card:hover { transform: translateY(-10px); }
+        .charm-icon { font-size: 3rem; margin-bottom: 20px; }
+        .charm-card h3 { font-size: 1.5rem; margin-bottom: 15px; }
+        .charm-card p { color: var(--text-muted); font-size: 0.95rem; }
+
+        /* --- 4. TIMELINE SECTION --- */
+        .timeline { background-color: var(--bg-secondary); border-radius: 30px; margin: 50px auto; }
+        .timeline-container { display: flex; justify-content: space-between; position: relative; margin-top: 60px; gap: 20px; }
+        .timeline-container::before {
+            content: ''; position: absolute; top: 40px; left: 10%; width: 80%; height: 4px;
+            background-color: var(--border-color); z-index: 1;
+        }
+        .timeline-step {
+            flex: 1; background-color: var(--white); padding: 30px; border-radius: 20px;
+            position: relative; z-index: 2; box-shadow: 0 5px 15px rgba(0,0,0,0.03); text-align: center;
+        }
+        .timeline-badge {
+            width: 50px; height: 50px; background-color: var(--accent-yellow); color: #3e2723;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-weight: 700; margin: 0 auto 20px; border: 4px solid var(--white);
+        }
+
+        /* --- 5. SUPPORT POINTS SECTION --- */
+        .support-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        .support-card { background-color: var(--white); border: 2px solid var(--text-dark); border-radius: 20px; padding: 35px; position: relative; }
+        .support-card::after {
+            content: ''; position: absolute; top: 8px; left: 8px; right: -8px; bottom: -8px;
+            background-color: var(--accent-yellow); border: 2px solid var(--text-dark); border-radius: 20px; z-index: -1;
+        }
+
+        /* --- ⭐ 게이미피케이션: 스피드 퀴즈 섹션 --- */
+        .quiz-section { background-color: var(--bg-secondary); border-radius: 30px; margin: 50px auto; text-align: center; }
+        .quiz-container { max-width: 600px; margin: 0 auto; background-color: var(--white); padding: 30px; border-radius: 20px; border: 1px solid var(--border-color); }
+        .quiz-opt-btn {
+            display: block; width: 100%; padding: 15px; margin: 10px 0; border-radius: 10px;
+            border: 1px solid var(--border-color); background-color: var(--bg-primary); color: var(--text-dark);
+            font-size: 1rem; font-weight: 600; cursor: pointer; text-align: left;
+        }
+        .quiz-opt-btn:hover { background-color: var(--accent-yellow); color: #3e2723; }
+        .tier-badge-box { margin-top: 25px; padding: 15px; border-radius: 10px; background-color: var(--bg-secondary); display: inline-block; }
+        #tier-title { font-weight: 800; color: var(--accent-warm); }
+
+        /* --- 6. GALLERY SECTION --- */
+        .gallery-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .gallery-item { position: relative; border-radius: 15px; overflow: hidden; aspect-ratio: 4 / 3; background-color: var(--bg-secondary); border: 1px solid var(--border-color); }
+        .gallery-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+        .gallery-item:hover img { transform: scale(1.05); }
+        .gallery-caption { position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); color: #fff; padding: 15px; font-size: 0.9rem; font-weight: 600; }
+
+        /* --- ⭐ 상호작용: 팀원 한마디 (댓글 시스템) --- */
+        .comment-section { max-width: 800px; margin: 50px auto; }
+        .comment-form { display: flex; gap: 10px; margin-bottom: 30px; }
+        .comment-input { padding: 15px; border-radius: 10px; border: 1px solid var(--border-color); background-color: var(--white); color: var(--text-dark); font-size: 1rem; }
+        .comment-input[name="author"] { flex: 1; }
+        .comment-input[name="content"] { flex: 3; }
+        .comment-submit { background-color: var(--text-dark); color: var(--bg-primary); border: none; padding: 0 25px; border-radius: 10px; font-weight: 700; cursor: pointer; }
+        .comment-submit:hover { background-color: var(--accent-warm); color: #3e2723; }
+        .comment-list { background-color: var(--white); border-radius: 20px; border: 1px solid var(--border-color); padding: 20px; }
+        .comment-item { padding: 15px 0; border-bottom: 1px solid var(--border-color); }
+        .comment-item:last-child { border-bottom: none; }
+        .comment-meta { font-weight: 700; font-size: 0.95rem; margin-bottom: 5px; display: flex; justify-content: space-between; }
+        .comment-date { font-weight: 400; color: var(--text-muted); font-size: 0.8rem; }
+
+        /* --- 7. CTA SECTION --- */
+        .cta-section { text-align: center; padding: 80px 20px; }
+        .cta-btn {
+            display: inline-block; background-color: var(--text-dark); color: var(--bg-primary);
+            padding: 20px 45px; font-size: 1.25rem; font-weight: 700; text-decoration: none;
+            border-radius: 50px; box-shadow: 0 10px 25px rgba(62, 39, 35, 0.15);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); cursor: pointer; border: none;
+        }
+        .cta-btn:hover { transform: scale(1.1); background-color: var(--accent-warm); color: #3e2723; }
+
+        /* --- 8. FOOTER --- */
+        footer { background-color: var(--text-dark); color: var(--bg-secondary); padding: 50px 20px; text-align: center; font-size: 0.95rem; }
+        .footer-links { margin-bottom: 20px; }
+        .footer-links a { color: var(--accent-yellow); text-decoration: none; margin: 0 15px; font-weight: 600; }
+        .footer-links a:hover { text-decoration: underline; }
+
+        /* --- 반응형 미디어 쿼리 --- */
+        @media (max-width: 992px) {
+            .hero { flex-direction: column; text-align: center; padding-top: 60px; }
+            .hero-title { font-size: 2.8rem; }
+            .charm-grid, .timeline-container, .support-grid, .gallery-grid, .comment-form { grid-template-columns: 1fr; flex-direction: column; gap: 30px; }
+            .timeline-container::before { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- v3: 스크롤 진행 바 -->
+    <div id="scroll-progress"></div>
+
+    <!-- v4: 은은한 햇빛 파티클 배경 -->
+    <canvas id="particle-canvas"></canvas>
+
+    <!-- v2: 다크모드 토글 버튼 -->
+    <button id="theme-toggle" aria-label="테마 변경">🌓</button>
+
+    <!-- 1. 히어로 섹션 -->
+    <section class="hero">
+        <div class="hero-content">
+            <span class="hero-tag">I AM</span>
+            <h1 class="hero-title">위풍당당 고양이와<br>따사로운 햇빛이<br>머무는 곳, <span>나의 방</span></h1>
+            <p class="hero-catchphrase">
+                따뜻한 햇빛이 비치는 집 안, 고양이 인절미와 승원의 일상. <br>
+                <strong>햇빛 한 줌, 고양이 한 스푼.</strong> 정승원의 포근한 집 안으로 초대합니다.
+            </p>
+        </div>
+        <div class="hero-graphic">
+            <div class="window-graphic">
+                <div class="sunlight"></div>
+                <div class="cat-silhouette"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 2. 소개 섹션 -->
+    <section id="about" class="about">
+        <h2 class="section-title">I AM</h2>
+        <p class="about-text">
+            반갑습니다! 2030 팀원 여러분을 정승원의 개인 공간으로 초대합니다. <br><br>
+            저는 집 안에서 고양이 '김인절미'와 뒹굴거리며 에너지를 충전하고, <br>
+            좋아하는 게임과 축구, 영화를 즐기며 나만의 단단한 세계를 만들어가는 사람입니다.
+        </p>
+    </section>
+
+    <!-- 3. 매력 포인트 섹션 -->
+    <section id="charms">
+        <h2 class="section-title">핵심 매력 포인트</h2>
+        <div class="charm-grid">
+            <div class="charm-card">
+                <div class="charm-icon">🐾</div>
+                <h3>귀여움</h3>
+                <p>고양이 '김인절미'가 온 방안을 누비며 신나게 놀고 간 귀여운 장난감 흔적들이 가득합니다.</p>
+            </div>
+            <div class="charm-card">
+                <div class="charm-icon">🎮</div>
+                <h3>취미 용품들</h3>
+                <p>주말을 책임지는 축구공, 열정을 증명하는 롤 에메랄드 티어 마크, 그리고 마블 엔드게임 굿즈까지 소장 중입니다.</p>
+            </div>
+            <div class="charm-card">
+                <div class="charm-icon">✏️</div>
+                <h3>깔끔함</h3>
+                <p>직접 귀엽게 그린 아기자기한 고양이 일러스트 요소를 배치하여 감성적인 톤앤매너를 유지합니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 4. 교육 과정 흐름 섹션 -->
+    <section id="timeline" class="timeline">
+        <h2 class="section-title">라이프 플로우</h2>
+        <div class="timeline-container">
+            <div class="timeline-step">
+                <div class="timeline-badge">01</div>
+                <h3>집 밖</h3>
+                <p>넓은 축구장을 누비며 팀워크를 다지고 에너지를 발산하는 역동적인 외부 활동 시간</p>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-badge">02</div>
+                <h3>집 안</h3>
+                <p>따뜻한 햇빛 아래 고양이 인절미를 보살피고, 롤과 마블 영화를 보며 영감을 채우는 충전의 시간</p>
+            </div>
+            <div class="timeline-step">
+                <div class="timeline-badge">03</div>
+                <h3>집 밖</h3>
+                <p>집안에서 꽉 채운 긍정적인 에너지와 아이디어를 가지고 5명의 팀원들과 협업하러 나아가는 시간</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- 5. 지원 포인트 섹션 -->
+    <section id="support-section">
+        <h2 class="section-title">스페셜 키워드</h2>
+        <div class="support-grid">
+            <div class="support-card">
+                <h3>🐈 고양이 케어</h3>
+                <p style="margin-top: 15px;">인절미를 챙기는 꼼꼼함과 다정함으로 프로젝트의 작은 디테일까지 세심하게 살핍니다.</p>
+            </div>
+            <div class="support-card">
+                <h3>🏆 몰입하는 취미</h3>
+                <p style="margin-top: 15px;">롤 에메랄드 달성, 좋아하는 분야에 끝까지 깊게 몰입하고 성과를 내는 추진력을 가졌습니다.</p>
+            </div>
+            <div class="support-card">
+                <h3>🗺️ 나침반과 지도</h3>
+                <p style="margin-top: 15px;">집 안팎을 명확히 구분하고 조율하듯, 팀 프로젝트 진행 시 방향성을 잡는 이정표 역할을 합니다.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- ⭐ 게이미피케이션: 스피드 퀴즈 섹션 -->
+    <section id="quiz" class="quiz-section">
+        <h2 class="section-title">승원&인절미 스피드 퀴즈</h2>
+        <div class="quiz-container">
+            <div id="quiz-box">
+                <p id="quiz-question" style="font-size: 1.2rem; font-weight: 700; margin-bottom: 20px;">Q. 정승원의 리그 오브 레전드(LoL) 현재 티어는 어디일까요?</p>
+                <div id="quiz-options">
+                    <button class="quiz-opt-btn" onclick="checkAnswer(false)">1. 실버 (잔잔한 물결)</button>
+                    <button class="quiz-opt-btn" onclick="checkAnswer(true)">2. 에메랄드 (빛나는 열정)</button>
+                    <button class="quiz-opt-btn" onclick="checkAnswer(false)">3. 챌린저 (천상계 방랑자)</button>
+                </div>
+            </div>
+            <div class="tier-badge-box">
+                <span>현재 팀원 등급: </span><span id="tier-title">🥉 브론즈 팀원</span> (포인트: <span id="quiz-points">0</span>점)
+            </div>
+        </div>
+    </section>
+
+    <!-- 6. 갤러리 섹션 -->
+    <section id="gallery">
+        <h2 class="section-title">나의 일상 조각들</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=80" alt="고양이">
+                <div class="gallery-caption">우리 집 대장, 김인절미</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=500&q=80" alt="축구">
+                <div class="gallery-caption">스트레스를 날리는 축구 경기</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?auto=format&fit=crop&w=500&q=80" alt="게이밍">
+                <div class="gallery-caption">에메랄드 티어의 열정</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1536440136628-849c177e76a1?auto=format&fit=crop&w=500&q=80" alt="영화관">
+                <div class="gallery-caption">마블 정주행 플레이스</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=500&q=80" alt="방안 햇빛">
+                <div class="gallery-caption">오후 3시, 방 안 가득한 햇빛</div>
+            </div>
+            <div class="gallery-item">
+                <img src="https://images.unsplash.com/photo-1531538606174-0f90ff5dce83?auto=format&fit=crop&w=500&q=80" alt="팀원 협업">
+                <div class="gallery-caption">5명의 소중한 팀원들과 함께</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ⭐ 상호작용: 팀원 한마디 (댓글 공간) -->
+    <section id="comments" class="comment-section">
+        <h2 class="section-title">팀원 한마디</h2>
+        <form class="comment-form" id="comment-form">
+            <input type="text" class="comment-input" name="author" placeholder="이름" required>
+            <input type="text" class="comment-input" name="content" placeholder="포근한 메시지를 남겨주세요!" required>
+            <button type="submit" class="comment-submit">등록</button>
+        </form>
+        <div class="comment-list" id="comment-list">
+            <!-- 댓글이 여기에 동적으로 추가됨 -->
+        </div>
+    </section>
+
+    <!-- 7. CTA 섹션 -->
+    <section class="cta-section">
+        <button class="cta-btn" id="cta-button">나에 대해 더 알아보기</button>
+    </section>
+
+    <!-- 8. 푸터 섹션 -->
+    <footer>
+        <div class="footer-links">
+            <a href="#">공식 사이트 바로가기</a>
+            <a href="mailto:seungwon@example.com">문의하기 (Email)</a>
+        </div>
+        <p>&copy; 2026 I AM 정승원. All rights reserved. Designed for Our Team.</p>
+    </footer>
+
+    <!-- --- JAVASCRIPT --- -->
+    <script>
+        /* ==========================================================================
+           v2: 다크모드/라이트모드 토글 기능
+           ========================================================================== */
+        const themeToggle = document.getElementById('theme-toggle');
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            themeToggle.innerText = document.body.classList.contains('dark-mode') ? '☀️' : '🌓';
+        });
+
+        /* ==========================================================================
+           v3: 우측 상단 스크롤 진행률 바 기능
+           ========================================================================== */
+        window.addEventListener('scroll', () => {
+            const scrollTop = window.scrollY;
+            const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+            const scrollPercent = (scrollTop / docHeight) * 100;
+            document.getElementById('scroll-progress').style.width = scrollPercent + '%';
+        });
+
+        /* ==========================================================================
+           v4: 배경 파티클 애니메이션 (은은하게 빛나는 햇빛 효과)
+           ========================================================================== */
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.radius = Math.random() * 2.5 + 0.5;
+                this.vx = Math.random() * 0.4 - 0.2; // 아주 느리게 이동
+                this.vy = Math.random() * 0.4 - 0.2;
+                this.alpha = Math.random() * 0.5 + 0.1;
+            }
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = document.body.classList.contains('dark-mode') ? '#ffb74d' : '#f4c430';
+                ctx.fill();
+                ctx.restore();
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+        }
+
+        function initParticles() {
+            particles = [];
+            for (let i = 0; i < 40; i++) { // 과하지 않게 40개 배치
+                particles.push(new Particle());
+            }
+        }
+        initParticles();
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.update();
+                p.draw();
+            });
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        /* ==========================================================================
+           게이미피케이션: 스피드 퀴즈 & 칭호 획득 시스템
+           ========================================================================== */
+        let points = 0;
+        let currentQuestion = 1;
+
+        function checkAnswer(isCorrect) {
+            if (currentQuestion === 1) {
+                if (isCorrect) {
+                    points += 50;
+                    alert("정답입니다! 롤 에메랄드의 열정이 느껴지네요. (+50점)");
+                } else {
+                    alert("아쉽습니다! 승원은 협곡에서 '에메랄드'로 활약 중입니다.");
+                }
+                // 2번 문제로 변경
+                currentQuestion = 2;
+                document.getElementById('quiz-question').innerText = "Q. 승원이 키우는 위풍당당 고양이의 이름은 무엇일까요?";
+                document.getElementById('quiz-options').innerHTML = `
+                    <button class="quiz-opt-btn" onclick="checkAnswer(true)">1. 김인절미 (포근쫀득)</button>
+                    <button class="quiz-opt-btn" onclick="checkAnswer(false)">2. 김시라소니 (와일드)</button>
+                `;
+            } else if (currentQuestion === 2) {
+                if (isCorrect) {
+                    points += 50;
+                    alert("정답입니다! 쫀득하고 귀여운 김인절미가 최고죠. (+50점)");
+                } else {
+                    alert("오답입니다! 귀여운 인절미가 삐질지도 몰라요.");
+                }
+                // 결과창으로 변경
+                document.getElementById('quiz-box').innerHTML = `<p style="font-size: 1.3rem; font-weight:700; color:var(--accent-warm);">🎉 퀴즈 종료! 승원님에 대해 잘 알게 되셨군요!</p>`;
+            }
+            updateTier();
+        }
+
+        function updateTier() {
+            document.getElementById('quiz-points').innerText = points;
+            const tierTitle = document.getElementById('tier-title');
+            if (points >= 100) {
+                tierTitle.innerText = "👑 인절미 수호대장 (골드)";
+            } else if (points >= 50) {
+                tierTitle.innerText = "🥈 든든한 파트너 (실버)";
+            } else {
+                tierTitle.innerText = "🥉 브론즈 팀원";
+            }
+        }
+
+        /* ==========================================================================
+           상호작용: LocalStorage 기반 댓글 시스템
+           ========================================================================== */
+        const commentForm = document.getElementById('comment-form');
+        const commentList = document.getElementById('comment-list');
+
+        // 초기 기본 댓글 세팅 (5명 팀원 컨셉)
+        const defaultComments = [
+            { author: "팀원 A", content: "인절미 사진 더 올려주세요 현기증 나요..!", date: "2026.07.11" },
+            { author: "팀원 B", content: "롤 에메랄드라니.. 오늘 밤 협곡에서 버스 태워주시나요?", date: "2026.07.12" }
+        ];
+
+        function getComments() {
+            const stored = localStorage.getItem('seungwon_comments');
+            return stored ? JSON.parse(stored) : defaultComments;
+        }
+
+        function renderComments() {
+            const comments = getComments();
+            commentList.innerHTML = comments.map(c => `
+                <div class="comment-item">
+                    <div class="comment-meta">
+                        <span>${c.author}</span>
+                        <span class="comment-date">${c.date}</span>
+                    </div>
+                    <div>${c.content}</div>
+                </div>
+            `).join('');
+        }
+
+        commentForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const authorInput = commentForm.querySelector('[name="author"]');
+            const contentInput = commentForm.querySelector('[name="content"]');
+            
+            const newComment = {
+                author: authorInput.value,
+                content: contentInput.value,
+                date: new Date().toLocaleDateString('ko-KR').slice(0, -1)
+            };
+
+            const comments = getComments();
+            comments.unshift(newComment); // 최신 글이 위로 오게
+            localStorage.setItem('seungwon_comments', JSON.stringify(comments));
+
+            authorInput.value = '';
+            contentInput.value = '';
+            renderComments();
+        });
+
+        renderComments();
+
+        /* ==========================================================================
+           CTA 버튼: 확대 반응형 효과 + 5번 섹션(id="support-section") 이동 기능
+           ========================================================================== */
+        document.getElementById('cta-button').addEventListener('click', () => {
+            document.getElementById('support-section').scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        });
+    </script>
+</body>
+</html>
